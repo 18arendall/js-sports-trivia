@@ -5,11 +5,11 @@ import { decodeHtml, shuffle } from './utils.js'
 // get the elements from the DOM
 const questionElement = document.querySelector('#question')
 const answersElement = document.querySelector('#answers')
-const nextQuestionElement = document.querySelector('#nextQuestion')
+const nextQuestionElement = document.querySelector('#nextQuestion');
 
 // IIFE (so we can use async/await)
 (async () => {
-
+	
 	// todo: create your "getNextQuestion" function
 	const getNextQuestion = async () =>{
 
@@ -20,14 +20,43 @@ const nextQuestionElement = document.querySelector('#nextQuestion')
 		return { question, answers, correct }
 
 	}
+	
 	// todo: create your "renderQuestion" function
 	const renderQuestion = ({ question, answers, correct }) => {
-		
+		answersElement.innerHTML = ""
+		questionElement.textContent = decodeHtml(question)
+
+		answers.forEach((answer) => {
+			const button = document.createElement('button')
+
+			button.textContent = decodeHtml(answer)
+
+			button.addEventListener("click", ()=>{
+				if (answer === correct) {
+					button.classList.add('correct')
+					answersElement.querySelectorAll('button').forEach(b => b.disabled = true)
+					alert('Correct!')
+					return
+				}
+
+				button.disabled = true
+				alert('Incorrect!')
+
+			});
+			answersElement.appendChild(button)
+		});
 	 }
 	// todo: add the event listener to the "nextQuestion" button
+	const nextQuestionBtn = document.getElementById("nextQuestion");
+	nextQuestionBtn.addEventListener("click", async ()=>{
+		renderQuestion(await getNextQuestion())
+		nextQuestionElement.disabled = true
+		setTimeout(() => nextQuestionElement.disabled = false, 10000)
 
-	console.log(await getNextQuestion)
-})()
+	});
+	
+})();
+
 
 // mimic a click on the "nextQuestion" button to show the first question
 nextQuestionElement.click()
